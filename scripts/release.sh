@@ -36,7 +36,7 @@ git ls-files -z \
   ':!:dist/**' ':!:**/.venv/**' ':!:**/node_modules/**' ':!:**/data/**' \
   ':!:**/secrets/**' ':!:.env' ':!:.env.local' ':!:.env.production' \
   ':!:*.pem' ':!:*.key' ':!:*.crt' ':!:*.p12' ':!:*.jks' \
-  | tar --null --files-from=- --no-recursion --transform="s,^,freshmesh-dxos-v${version}/," -czf "$tmp"
+  | tar --no-recursion --null --transform="s,^,freshmesh-dxos-v${version}/," -czf "$tmp" --files-from=-
 mv "$tmp" "dist/$archive"
 sha256sum "dist/$archive" > dist/SHA256SUMS
 
