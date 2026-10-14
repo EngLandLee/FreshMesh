@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.pdf binary
+*.tar.gz binary
+*.zip binary
+*.lock linguist-generated

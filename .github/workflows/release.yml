@@ -1,0 +1,187 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+name: Release source and Pages
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: write
+      actions: read
+    env:
+      COMPOSE_PROJECT_NAME: freshmesh-release-${{ github.run_id }}
+      TAG: ${{ github.ref_name }}
+      VERSION: ""
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - name: Validate immutable SemVer tag
+        id: tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "release tags must be vMAJOR.MINOR.PATCH: $TAG" >&2
+            exit 1
+          fi
+          version="${TAG#v}"
+          if [[ "$(git rev-parse HEAD)" != "$GITHUB_SHA" ]]; then
+            echo 'checked out commit does not match the tag event' >&2
+            exit 1
+          fi
+          if [[ "$(git rev-list -n1 "$TAG")" != "$GITHUB_SHA" ]]; then
+            echo 'tag does not resolve to the event commit' >&2
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo 'release source must already be merged into main' >&2
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked backend and browser dependencies
+        run: |
+          uv sync --project backend --frozen
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Run source verification
+        run: make verify
+      - name: Prepare isolated development stack
+        run: cp .env.example .env
+      - name: Build and start real stack with fresh volumes
+        run: |
+          docker compose -p "$COMPOSE_PROJECT_NAME" down -v --remove-orphans || true
+          docker compose -p "$COMPOSE_PROJECT_NAME" up --build -d
+      - name: Wait for public health endpoint
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://localhost:3180/api/health; then
+              exit 0
+            fi
+            sleep 5
+          done
+          docker compose -p "$COMPOSE_PROJECT_NAME" ps
+          docker compose -p "$COMPOSE_PROJECT_NAME" logs --no-color
+          exit 1
+      - name: Exercise HTTP business flow
+        run: make demo-check
+      - name: Capture real browser evidence
+        run: make screenshots
+      - name: Build static introduction
+        run: make site
+      - name: Serve and check exact static introduction
+        run: |
+          set -euo pipefail
+          python3 -m http.server 3181 --bind 127.0.0.1 --directory dist/site >"$RUNNER_TEMP/freshmesh-site.log" 2>&1 &
+          echo $! >"$RUNNER_TEMP/freshmesh-site.pid"
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:3181/ >/dev/null; then
+              make site-check
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/freshmesh-site.log"
+          exit 1
+      - name: Package clean source release
+        run: |
+          make release VERSION="$VERSION"
+          sha256sum --check dist/SHA256SUMS
+          mkdir -p dist/sbom-source
+          tar -xzf "dist/freshmesh-dxos-v${VERSION}-source.tar.gz" -C dist/sbom-source
+      - name: Generate independent Syft source SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: dist/sbom-source
+          format: cyclonedx-json
+          output-file: dist/freshmesh-dxos-v${{ steps.tag.outputs.version }}-source-syft.cdx.json
+          artifact-name: freshmesh-dxos-v${{ steps.tag.outputs.version }}-source-syft.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - name: Upload exact verified Pages site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: freshmesh-pages-${{ github.ref_name }}
+          path: dist/site
+          if-no-files-found: error
+          retention-days: 14
+      - name: Publish or conservatively complete GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="$GITHUB_REF_NAME"
+          archive="dist/freshmesh-dxos-v${VERSION}-source.tar.gz"
+          syft="dist/freshmesh-dxos-v${VERSION}-source-syft.cdx.json"
+          shopt -s nullglob
+          screenshots=(dist/screenshots/*.png)
+          (( ${#screenshots[@]} > 0 )) || { echo 'no screenshot PNGs were captured' >&2; exit 1; }
+          [[ -s dist/screenshots/screenshots.json ]] || { echo 'screenshot ledger is missing' >&2; exit 1; }
+          [[ -s dist/screenshots/LICENSE ]] || { echo 'screenshot license ledger is missing' >&2; exit 1; }
+          for screenshot in "${screenshots[@]}"; do
+            [[ -s "${screenshot}.license" ]] || { echo "screenshot sidecar is missing: ${screenshot}.license" >&2; exit 1; }
+          done
+          assets=("$archive" dist/SHA256SUMS dist/sbom.cdx.json "$syft")
+          for screenshot in "${screenshots[@]}"; do
+            assets+=("$screenshot" "${screenshot}.license")
+          done
+          assets+=(dist/screenshots/screenshots.json dist/screenshots/LICENSE)
+          if [[ -f website/assets/banner.png ]]; then
+            assets+=(website/assets/banner.png)
+            [[ -f website/assets/banner.png.license ]] && assets+=(website/assets/banner.png.license)
+          fi
+          for path in "${assets[@]}"; do
+            [[ -s "$path" ]] || { echo "missing release asset: $path" >&2; exit 1; }
+          done
+          if gh release view "$tag" --json tagName >/dev/null 2>&1; then
+            mapfile -t existing < <(gh release view "$tag" --json assets --jq '.assets[].name')
+            for path in "${assets[@]}"; do
+              name="$(basename "$path")"
+              if printf '%s\n' "${existing[@]}" | grep -Fqx "$name"; then
+                echo "keeping existing release asset $name"
+              else
+                gh release upload "$tag" "$path"
+              fi
+            done
+          else
+            gh release create "$tag" "${assets[@]}" --verify-tag --title "FreshMesh-DXOS $tag" --generate-notes
+          fi
+      - name: Collect service logs on failure
+        if: failure()
+        run: docker compose -p "$COMPOSE_PROJECT_NAME" logs --no-color
+      - name: Stop only this CI stack
+        if: always()
+        run: docker compose -p "$COMPOSE_PROJECT_NAME" down -v --remove-orphans
+  pages:
+    needs: release
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
+    with:
+      ref: ${{ github.ref_name }}
+      verified_site_artifact: freshmesh-pages-${{ github.ref_name }}

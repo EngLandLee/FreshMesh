@@ -4,6 +4,26 @@
 
 All notable changes to FreshMesh-DXOS OLP are recorded here. Dates use ISO 8601.
 
+## [0.3.0] — 2026-10-14
+
+### Added
+
+- Public landing page and original FreshMesh banner, also served at local `/about/`
+  without moving the operational portal or changing OIDC callbacks.
+- Real Playwright screenshot gallery across all portal sections, SSO, four-role
+  transfer/route/delivery/receipt, evidence and mobile; optional actual agent capture.
+- Source startup, screenshot reproduction and Git workflow guides; Linux devcontainer,
+  editor configuration and line-ending conventions.
+- PR evidence artifacts, trusted SemVer source-release automation and exact-source
+  GitHub Pages deployment, with real Docker/HTTP/browser and static website gates.
+
+### Changed
+
+- Rebuilt README around project problem, capabilities, architecture, screenshots,
+  setup and source ownership; removed the two requested promotional passages.
+- Source-header audit now includes SVG artwork and editor/Git configuration.
+- Corrected live-health and restart guidance; static verification is not service readiness.
+
 ## [0.2.1] — 2026-10-14
 
 ### Repository maintenance
@@ -39,5 +59,6 @@ All notable changes to FreshMesh-DXOS OLP are recorded here. Dates use ISO 8601.
 
 - Added contributor, security, conduct, architecture, demo, and delivery guidance.
 
+[0.3.0]: https://github.com/EngLandLee/FreshMesh-DXOS/releases/tag/v0.3.0
 [0.2.1]: https://github.com/EngLandLee/FreshMesh-DXOS/releases/tag/v0.2.1
 [0.2.0]: https://github.com/EngLandLee/FreshMesh-DXOS/releases/tag/v0.2.0

@@ -7,6 +7,11 @@ routes:
     methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
     upstream:
       type: roundrobin
+      # The optional local model has a 120-second backend deadline.
+      timeout:
+        connect: 3
+        send: 130
+        read: 130
       nodes:
         "api:8100": 1
     plugins:
