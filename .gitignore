@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+node_modules/
+portal/node_modules/
+backend/.mypy_cache/
+backend/.ruff_cache/
+.ruff_cache/
+workflow/target/
+dist/
+coverage/
+htmlcov/
+*.log
+*.sqlite3
+*.db
+.DS_Store
+
+# Runtime data and credentials must never enter a source release
+.volumes/
+data/
+secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+
+# Local model weights and caches
+.ollama/
+models/

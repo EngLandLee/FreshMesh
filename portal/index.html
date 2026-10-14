@@ -1,0 +1,705 @@
+<!--
+  SPDX-License-Identifier: Apache-2.0
+  Copyright 2026 FreshMesh-DXOS contributors
+-->
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>FreshMesh OLP · Điều phối vận hành</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Bỏ qua đến nội dung chính</a>
+    <div
+      id="toast-region"
+      class="toast-region"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <section
+      id="auth-view"
+      class="auth-view"
+      aria-labelledby="auth-title"
+      hidden
+    >
+      <div class="auth-panel">
+        <p class="brand-mark">FRESH<span>MESH</span> / OLP</p>
+        <h1 id="auth-title">Điều chuyển hàng tươi trong chuỗi</h1>
+        <p class="auth-copy">
+          HPDI P · Chuyển hàng có kiểm soát từ đề xuất đến xác nhận nhận hàng.
+        </p>
+        <div class="auth-rule" aria-hidden="true"></div>
+        <p id="auth-status" class="notice notice-neutral">
+          Đang chuẩn bị đăng nhập an toàn…
+        </p>
+        <button
+          id="login-button"
+          class="button button-primary button-wide"
+          type="button"
+        >
+          Đăng nhập bằng tài khoản doanh nghiệp
+        </button>
+        <p class="auth-footnote">
+          Xác thực OIDC PKCE S256 · Không lưu mật khẩu trong trình duyệt.
+        </p>
+      </div>
+    </section>
+
+    <div id="app-view" class="app-shell" hidden>
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a
+            class="brand"
+            href="#overview"
+            data-nav="overview"
+            aria-label="FreshMesh OLP, trang tổng quan"
+          >
+            <span class="brand-name">FRESH<span>MESH</span></span>
+            <span class="brand-product">OLP / HPDI P</span>
+          </a>
+          <div class="topbar-context">
+            <span id="user-scope" class="scope-label">Đang tải danh tính…</span>
+            <span id="session-status" class="session-status"
+              ><span class="status-dot" aria-hidden="true"></span> Phiên hoạt
+              động</span
+            >
+            <button
+              id="logout-button"
+              class="button button-quiet"
+              type="button"
+            >
+              Đăng xuất
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside class="sidebar" aria-label="Điều hướng chính">
+          <div class="sidebar-heading">VẬN HÀNH</div>
+          <nav class="nav-list">
+            <a href="#overview" class="nav-link is-active" data-nav="overview"
+              ><span>Tổng quan</span
+              ><span class="nav-count" id="nav-overview-count"></span
+            ></a>
+            <a
+              href="#recommendations"
+              class="nav-link"
+              data-nav="recommendations"
+              ><span>Đề xuất</span
+              ><span class="nav-count" id="nav-recommendation-count"></span
+            ></a>
+            <a href="#transfers" class="nav-link" data-nav="transfers"
+              ><span>Phiếu chuyển</span
+              ><span class="nav-count" id="nav-transfer-count"></span
+            ></a>
+            <a href="#routes" class="nav-link" data-nav="routes"
+              ><span>Lộ trình</span
+              ><span class="nav-count" id="nav-route-count"></span
+            ></a>
+            <a href="#delivery" class="nav-link" data-nav="delivery"
+              ><span>Giao nhận</span
+              ><span class="nav-count" id="nav-delivery-count"></span
+            ></a>
+            <a href="#health" class="nav-link" data-nav="health"
+              ><span>Trạng thái lõi</span
+              ><span class="nav-count" id="nav-health-count"></span
+            ></a>
+          </nav>
+          <div class="sidebar-foot">
+            <div class="sidebar-heading">PHẠM VI DỮ LIỆU</div>
+            <p>
+              Chỉ hiển thị dữ liệu thuộc chuỗi và cửa hàng trong quyền của bạn.
+            </p>
+            <a href="#health" data-nav="health">Xem kiến trúc &amp; giả định</a>
+          </div>
+        </aside>
+
+        <main id="main-content" class="main-content" tabindex="-1">
+          <div
+            id="global-error"
+            class="notice notice-error"
+            role="alert"
+            hidden
+          ></div>
+
+          <section
+            id="view-overview"
+            class="view"
+            aria-labelledby="overview-title"
+          >
+            <div class="view-header">
+              <div>
+                <h1 id="overview-title">Tình hình vận hành</h1>
+                <p class="view-intro">
+                  Một mặt nhìn về tồn kho khả dụng, dòng chuyển hàng và các điểm
+                  cần xử lý.
+                </p>
+              </div>
+              <button
+                class="button button-secondary"
+                type="button"
+                data-action="refresh-overview"
+              >
+                Làm mới dữ liệu
+              </button>
+            </div>
+            <div id="overview-loading" class="loading-state" aria-live="polite">
+              Đang tải dữ liệu vận hành…
+            </div>
+            <div id="overview-content" hidden>
+              <div
+                class="metric-strip"
+                aria-label="Tóm tắt trạng thái phiếu chuyển"
+              >
+                <div class="metric-block">
+                  <span class="metric-label">Chờ duyệt</span
+                  ><strong id="count-submitted">—</strong>
+                </div>
+                <div class="metric-block">
+                  <span class="metric-label">Đã duyệt</span
+                  ><strong id="count-approved">—</strong>
+                </div>
+                <div class="metric-block">
+                  <span class="metric-label">Đang giao</span
+                  ><strong id="count-dispatched">—</strong>
+                </div>
+                <div class="metric-block">
+                  <span class="metric-label">Đã giao</span
+                  ><strong id="count-delivered">—</strong>
+                </div>
+                <div class="metric-block">
+                  <span class="metric-label">Đã nhận</span
+                  ><strong id="count-received">—</strong>
+                </div>
+                <div class="metric-block metric-block-muted">
+                  <span class="metric-label">Từ chối</span
+                  ><strong id="count-rejected">—</strong>
+                </div>
+              </div>
+              <div class="overview-grid">
+                <section
+                  class="panel panel-table"
+                  aria-labelledby="stock-title"
+                >
+                  <div class="panel-heading">
+                    <div><h2 id="stock-title">Khả dụng theo lô</h2></div>
+                    <span id="stock-updated" class="muted-label"></span>
+                  </div>
+                  <div class="table-scroll">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th scope="col">Sản phẩm / lô</th>
+                          <th scope="col">Cửa hàng</th>
+                          <th scope="col">Khả dụng</th>
+                          <th scope="col">Hạn dùng</th>
+                          <th scope="col">Giá trị đơn vị</th>
+                        </tr>
+                      </thead>
+                      <tbody id="stock-table-body"></tbody>
+                    </table>
+                  </div>
+                  <div id="stock-empty" class="empty-state" hidden>
+                    <strong>Chưa có tồn kho trong phạm vi</strong
+                    ><span
+                      >Dữ liệu sẽ xuất hiện khi hệ thống ghi nhận lô hàng.</span
+                    >
+                  </div>
+                </section>
+                <section class="panel" aria-labelledby="store-title">
+                  <div class="panel-heading">
+                    <div><h2 id="store-title">Cửa hàng trong chuỗi</h2></div>
+                  </div>
+                  <div id="store-list" class="store-list"></div>
+                  <div id="store-empty" class="empty-state" hidden>
+                    <strong>Chưa có cửa hàng</strong
+                    ><span>Không có cửa hàng nào thuộc phạm vi của bạn.</span>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="view-recommendations"
+            class="view"
+            aria-labelledby="recommendations-title"
+            hidden
+          >
+            <div class="view-header">
+              <div>
+                <h1 id="recommendations-title">Đề xuất điều chuyển</h1>
+                <p class="view-intro">
+                  Các đề xuất được tạo từ tồn kho, dự báo và quy tắc hạn dùng.
+                  Mọi giả định đều được ghi rõ.
+                </p>
+              </div>
+              <button
+                class="button button-secondary"
+                type="button"
+                data-action="refresh-recommendations"
+              >
+                Làm mới đề xuất
+              </button>
+            </div>
+            <div
+              id="recommendations-meta"
+              class="provenance-banner"
+              hidden
+            ></div>
+            <div
+              id="recommendations-loading"
+              class="loading-state"
+              aria-live="polite"
+            >
+              Đang tải đề xuất…
+            </div>
+            <div
+              id="recommendation-list"
+              class="recommendation-list"
+              hidden
+            ></div>
+            <div
+              id="recommendations-empty"
+              class="empty-state empty-state-large"
+              hidden
+            >
+              <strong>Chưa có đề xuất khả dụng</strong
+              ><span
+                >Hệ thống sẽ hiển thị đề xuất khi có chênh lệch tồn kho hoặc tín
+                hiệu hạn dùng.</span
+              >
+            </div>
+          </section>
+
+          <section
+            id="view-transfers"
+            class="view"
+            aria-labelledby="transfers-title"
+            hidden
+          >
+            <div class="view-header">
+              <div>
+                <h1 id="transfers-title">Phiếu chuyển</h1>
+                <p class="view-intro">
+                  Theo dõi từng bước phê duyệt, điều phối, giao và nhận. Chọn
+                  một phiếu để xem nhật ký.
+                </p>
+              </div>
+              <button
+                id="new-transfer-button"
+                class="button button-primary"
+                type="button"
+                data-action="open-transfer-form"
+              >
+                Tạo phiếu thủ công
+              </button>
+            </div>
+            <div
+              class="filter-row"
+              role="group"
+              aria-label="Bộ lọc phiếu chuyển"
+            >
+              <label
+                >Trạng thái<select id="transfer-status-filter">
+                  <option value="">Tất cả</option>
+                  <option value="submitted">Chờ duyệt</option>
+                  <option value="approved">Đã duyệt</option>
+                  <option value="rejected">Từ chối</option>
+                  <option value="dispatched">Đang giao</option>
+                  <option value="delivered">Đã giao</option>
+                  <option value="received">Đã nhận</option>
+                </select></label
+              ><label
+                >Tìm kiếm<input
+                  id="transfer-search"
+                  type="search"
+                  placeholder="Mã, sản phẩm, cửa hàng…" /></label
+              ><button
+                class="button button-secondary"
+                type="button"
+                data-action="refresh-transfers"
+              >
+                Làm mới
+              </button>
+            </div>
+            <div
+              id="transfers-loading"
+              class="loading-state"
+              aria-live="polite"
+            >
+              Đang tải phiếu chuyển…
+            </div>
+            <div id="transfer-list" class="transfer-list" hidden></div>
+            <div
+              id="transfers-empty"
+              class="empty-state empty-state-large"
+              hidden
+            >
+              <strong>Không có phiếu phù hợp</strong
+              ><span
+                >Thử đổi bộ lọc hoặc tạo phiếu chuyển mới nếu bạn có
+                quyền.</span
+              >
+            </div>
+          </section>
+
+          <section
+            id="view-routes"
+            class="view"
+            aria-labelledby="routes-title"
+            hidden
+          >
+            <div class="view-header">
+              <div>
+                <h1 id="routes-title">Lộ trình giao hàng</h1>
+                <p class="view-intro">
+                  Gom các phiếu đã duyệt thành tuyến. Khoảng cách là ước tính
+                  đường chim bay, không phải chỉ đường theo đường phố.
+                </p>
+              </div>
+              <button
+                id="plan-route-button"
+                class="button button-primary"
+                type="button"
+                data-action="open-route-form"
+              >
+                Lập lộ trình
+              </button>
+            </div>
+            <div id="routes-loading" class="loading-state" aria-live="polite">
+              Đang tải lộ trình…
+            </div>
+            <div id="route-list" class="route-list" hidden></div>
+            <div id="routes-empty" class="empty-state empty-state-large" hidden>
+              <strong>Chưa có lộ trình</strong
+              ><span
+                >Phê duyệt phiếu chuyển trước, sau đó lập lộ trình cho tài
+                xế.</span
+              >
+            </div>
+          </section>
+
+          <section
+            id="view-delivery"
+            class="view"
+            aria-labelledby="delivery-title"
+            hidden
+          >
+            <div class="view-header">
+              <div>
+                <h1 id="delivery-title">Giao nhận</h1>
+                <p class="view-intro">
+                  Tài xế cập nhật số lượng giao thực tế; quản lý đích xác nhận
+                  số lượng nhận.
+                </p>
+              </div>
+              <button
+                class="button button-secondary"
+                type="button"
+                data-action="refresh-transfers"
+              >
+                Làm mới
+              </button>
+            </div>
+            <div id="delivery-list" class="delivery-list"></div>
+            <div
+              id="delivery-empty"
+              class="empty-state empty-state-large"
+              hidden
+            >
+              <strong>Không có chuyến cần xử lý</strong
+              ><span>Phiếu sẽ xuất hiện tại đây khi được điều phối.</span>
+            </div>
+          </section>
+
+          <section
+            id="view-health"
+            class="view"
+            aria-labelledby="health-title"
+            hidden
+          >
+            <div class="view-header">
+              <div>
+                <h1 id="health-title">Trạng thái lõi &amp; kiến trúc</h1>
+                <p class="view-intro">
+                  Bốn dịch vụ bắt buộc phải sẵn sàng để vận hành xuyên suốt.
+                </p>
+              </div>
+              <button
+                class="button button-secondary"
+                type="button"
+                data-action="refresh-health"
+              >
+                Kiểm tra lại
+              </button>
+            </div>
+            <section
+              class="panel health-panel"
+              aria-labelledby="core-services-title"
+            >
+              <div class="panel-heading">
+                <div><h2 id="core-services-title">Các lõi bắt buộc</h2></div>
+                <span id="health-summary" class="health-summary"
+                  >Chưa kiểm tra</span
+                >
+              </div>
+              <div id="service-health-list" class="service-health-list"></div>
+            </section>
+            <div class="architecture-grid">
+              <section class="panel">
+                <h2>Provenance &amp; giả định</h2>
+                <div id="provenance-copy" class="copy-stack">
+                  <p>
+                    Dữ liệu demo tự tạo trong PostgreSQL, không phải giao dịch
+                    doanh nghiệp thật. Giao diện đọc qua API được xác thực,
+                    không chèn dữ liệu giả phía trình duyệt.
+                  </p>
+                  <p>
+                    Đề xuất hiển thị phương pháp và giả định do dịch vụ phân
+                    tích trả về; các giá trị không được suy diễn tại trình
+                    duyệt.
+                  </p>
+                </div>
+              </section>
+              <section class="panel">
+                <h2>Phạm vi tính toán</h2>
+                <div class="copy-stack">
+                  <p>
+                    Lộ trình dùng thứ tự điểm dừng do dịch vụ trả về và khoảng
+                    cách Haversine ước tính.
+                  </p>
+                  <p>
+                    Khoảng cách không đại diện cho quãng đường thực tế trên
+                    đường phố. Không có chỉ đường trực tiếp hoặc ETA giao thông.
+                  </p>
+                </div>
+              </section>
+              <section class="panel">
+                <h2>Ollama agent</h2>
+                <div id="agent-status" class="agent-status">
+                  <span
+                    class="status-dot status-dot-muted"
+                    aria-hidden="true"
+                  ></span
+                  ><span>Chưa kiểm tra cấu hình</span>
+                </div>
+                <button
+                  class="button button-secondary"
+                  type="button"
+                  data-action="open-agent"
+                >
+                  Thử trợ lý
+                </button>
+                <p class="small-note">
+                  Trợ lý không tham gia luồng nghiệp vụ. Khi Ollama chưa cấu
+                  hình, hệ thống sẽ báo không khả dụng thay vì trả lời giả.
+                </p>
+              </section>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <dialog
+      id="transfer-dialog"
+      class="dialog"
+      aria-labelledby="transfer-dialog-title"
+    >
+      <form id="transfer-form" method="dialog">
+        <div class="dialog-header">
+          <div>
+            <h2 id="transfer-dialog-title">Tạo phiếu chuyển thủ công</h2>
+          </div>
+          <button
+            class="dialog-close"
+            type="button"
+            data-action="close-dialog"
+            aria-label="Đóng"
+          >
+            Đóng
+          </button>
+        </div>
+        <div
+          id="transfer-form-error"
+          class="notice notice-error"
+          role="alert"
+          hidden
+        ></div>
+        <div class="form-grid">
+          <label
+            >Cửa hàng nguồn<select
+              id="form-source-store"
+              name="source_store_id"
+              required
+            ></select></label
+          ><label
+            >Cửa hàng đích<select
+              id="form-target-store"
+              name="target_store_id"
+              required
+            ></select></label
+          ><label class="field-wide"
+            >Lô hàng<select
+              id="form-lot"
+              name="lot_id"
+              required
+            ></select></label
+          ><label
+            >Số lượng<input
+              id="form-quantity"
+              name="quantity"
+              type="number"
+              min="1"
+              step="1"
+              required /></label
+          ><label class="field-wide"
+            >Ghi chú<textarea
+              id="form-note"
+              name="note"
+              rows="3"
+              maxlength="1000"
+              placeholder="Lý do hoặc lưu ý bàn giao (không bắt buộc)"
+            ></textarea>
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-action="close-dialog"
+          >
+            Hủy</button
+          ><button class="button button-primary" type="submit">
+            Tạo phiếu
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog
+      id="route-dialog"
+      class="dialog"
+      aria-labelledby="route-dialog-title"
+    >
+      <form id="route-form" method="dialog">
+        <div class="dialog-header">
+          <div><h2 id="route-dialog-title">Lập lộ trình</h2></div>
+          <button
+            class="dialog-close"
+            type="button"
+            data-action="close-dialog"
+            aria-label="Đóng"
+          >
+            Đóng
+          </button>
+        </div>
+        <div
+          id="route-form-error"
+          class="notice notice-error"
+          role="alert"
+          hidden
+        ></div>
+        <label
+          >Tài xế<select
+            id="form-driver"
+            name="driver_username"
+            required
+          ></select
+        ></label>
+        <fieldset class="checkbox-fieldset">
+          <legend>Phiếu đã duyệt</legend>
+          <div id="route-transfer-options" class="checkbox-list"></div>
+        </fieldset>
+        <p class="small-note">
+          Dịch vụ sẽ trả về thứ tự điểm dừng, khoảng cách ước tính và giả định.
+          Chỉ phiếu được chọn mới được gom vào lộ trình.
+        </p>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-action="close-dialog"
+          >
+            Hủy</button
+          ><button class="button button-primary" type="submit">
+            Tạo lộ trình
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog
+      id="detail-dialog"
+      class="dialog dialog-wide"
+      aria-labelledby="detail-dialog-title"
+    >
+      <div class="dialog-header">
+        <div><h2 id="detail-dialog-title">Phiếu chuyển</h2></div>
+        <button
+          class="dialog-close"
+          type="button"
+          data-action="close-dialog"
+          aria-label="Đóng"
+        >
+          Đóng
+        </button>
+      </div>
+      <div id="transfer-detail-content"></div>
+    </dialog>
+
+    <dialog
+      id="agent-dialog"
+      class="dialog"
+      aria-labelledby="agent-dialog-title"
+    >
+      <form id="agent-form" method="dialog">
+        <div class="dialog-header">
+          <div><h2 id="agent-dialog-title">Trợ lý vận hành</h2></div>
+          <button
+            class="dialog-close"
+            type="button"
+            data-action="close-dialog"
+            aria-label="Đóng"
+          >
+            Đóng
+          </button>
+        </div>
+        <div id="agent-response" class="agent-response" aria-live="polite">
+          <p>
+            Đặt câu hỏi về dữ liệu vận hành. Câu trả lời chỉ có sẵn khi Ollama
+            đã được cấu hình.
+          </p>
+        </div>
+        <label
+          >Câu hỏi<textarea
+            id="agent-message"
+            rows="3"
+            maxlength="2000"
+            required
+            placeholder="Ví dụ: Những phiếu nào đang chờ xác nhận?"
+          ></textarea>
+        </label>
+        <div class="dialog-actions">
+          <button
+            class="button button-secondary"
+            type="button"
+            data-action="close-dialog"
+          >
+            Đóng</button
+          ><button class="button button-primary" type="submit">
+            Gửi câu hỏi
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

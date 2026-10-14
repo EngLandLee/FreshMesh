@@ -1,0 +1,29 @@
+# Declarative APISIX routes; no etcd/admin listener is enabled.
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+routes:
+  - id: freshmesh-api
+    uri: /api/*
+    methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+    upstream:
+      type: roundrobin
+      nodes:
+        "api:8100": 1
+    plugins:
+      request-id:
+        include_in_response: true
+      limit-count:
+        count: 120
+        time_window: 60
+        rejected_code: 429
+        key: remote_addr
+        policy: local
+      proxy-rewrite:
+        headers:
+          set:
+            X-FreshMesh-Gateway: apisix
+
+# Health is intentionally proxied through the same authenticated service boundary;
+# the backend itself permits this one anonymous readiness endpoint.
+# A catch-all is omitted so accidental paths receive APISIX's 404.
+#END

@@ -1,0 +1,174 @@
+{
+  "realm": "freshmesh",
+  "enabled": true,
+  "displayName": "FreshMesh Demo",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "accessTokenLifespan": 900,
+  "attributes": {
+    "frontendUrl": "http://localhost:3180/auth"
+  },
+  "roles": {
+    "realm": [
+      {
+        "name": "owner",
+        "description": "Chain owner: approve and dispatch transfers"
+      },
+      {
+        "name": "store_manager",
+        "description": "Store manager: create and receive transfers"
+      },
+      { "name": "driver", "description": "Driver: deliver assigned transfers" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "freshmesh-portal",
+      "name": "FreshMesh Portal",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "defaultClientScopes": ["basic", "profile", "email", "roles", "web-origins"],
+      "redirectUris": ["http://localhost:3180/*"],
+      "webOrigins": ["http://localhost:3180"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "protocolMappers": [
+        {
+          "name": "freshmesh-subject",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-sub-mapper",
+          "config": {
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "freshmesh-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "freshmesh-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "chain_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "chain_id",
+            "claim.name": "chain_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "store_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "store_id",
+            "claim.name": "store_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "owner_a",
+      "firstName": "Owner",
+      "lastName": "A",
+      "email": "owner_a@example.invalid",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "chain_id": ["CHAIN_A"] },
+      "realmRoles": ["owner"],
+      "credentials": [
+        { "type": "password", "value": "demo123", "temporary": false }
+      ]
+    },
+    {
+      "username": "manager_a1",
+      "firstName": "Manager",
+      "lastName": "A1",
+      "email": "manager_a1@example.invalid",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "chain_id": ["CHAIN_A"], "store_id": ["A-01"] },
+      "realmRoles": ["store_manager"],
+      "credentials": [
+        { "type": "password", "value": "demo123", "temporary": false }
+      ]
+    },
+    {
+      "username": "manager_a2",
+      "firstName": "Manager",
+      "lastName": "A2",
+      "email": "manager_a2@example.invalid",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "chain_id": ["CHAIN_A"], "store_id": ["A-02"] },
+      "realmRoles": ["store_manager"],
+      "credentials": [
+        { "type": "password", "value": "demo123", "temporary": false }
+      ]
+    },
+    {
+      "username": "driver_a",
+      "firstName": "Driver",
+      "lastName": "A",
+      "email": "driver_a@example.invalid",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "chain_id": ["CHAIN_A"], "store_id": ["A-01"] },
+      "realmRoles": ["driver"],
+      "credentials": [
+        { "type": "password", "value": "demo123", "temporary": false }
+      ]
+    },
+    {
+      "username": "owner_b",
+      "firstName": "Owner",
+      "lastName": "B",
+      "email": "owner_b@example.invalid",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "chain_id": ["CHAIN_B"] },
+      "realmRoles": ["owner"],
+      "credentials": [
+        { "type": "password", "value": "demo123", "temporary": false }
+      ]
+    },
+    {
+      "username": "driver_b",
+      "firstName": "Driver",
+      "lastName": "B",
+      "email": "driver_b@example.invalid",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": { "chain_id": ["CHAIN_B"], "store_id": ["B-01"] },
+      "realmRoles": ["driver"],
+      "credentials": [
+        { "type": "password", "value": "demo123", "temporary": false }
+      ]
+    }
+  ]
+}

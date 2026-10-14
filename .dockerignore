@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+.git
+.env
+.env.local
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/target
+**/node_modules
+dist
+secrets
+data
