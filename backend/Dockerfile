@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 FreshMesh-DXOS contributors
-FROM ghcr.io/astral-sh/uv:0.9.17-python3.12-bookworm-slim AS build
+FROM ghcr.io/astral-sh/uv:0.9.30-python3.12-bookworm-slim AS build
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
