@@ -3,7 +3,7 @@
 # Copyright 2026 FreshMesh-DXOS contributors
 set -eu
 
-repo=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+repo=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$repo"
 
 printf '%s\n' '== backend unit tests =='
