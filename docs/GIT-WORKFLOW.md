@@ -2,10 +2,12 @@
 <!-- Copyright 2026 FreshMesh-DXOS contributors -->
 # Git, CI, release, and Pages workflow
 
-This document describes the repository automation as it is configured in source.
-It does **not** claim that branch protection, required checks, or human reviews
-are enabled on GitHub. A maintainer must inspect the repository settings before
-relying on any of those controls.
+This document describes the repository automation and the settings observed on
+2026-10-14. `main` requires `unit`, `audit`, and `e2e` with strict up-to-date checks;
+administrators are subject to those checks, force pushes and branch deletion are
+disabled, and conversation resolution is required. Human approval is not enforced
+by this configuration and no human review is claimed. Inspect live settings before
+relying on these controls after subsequent repository changes.
 
 ## Issues, branches, and pull requests
 

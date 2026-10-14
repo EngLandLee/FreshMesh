@@ -41,6 +41,8 @@ jobs:
           exit 1
       - name: Exercise authenticated business flow
         run: python3 scripts/demo-check.py --base-url http://localhost:3180
+      - name: Exercise read-only route map controls and boundaries
+        run: npm run test:map
       - name: Exercise and capture genuine multi-role portal evidence
         run: make screenshots
       - name: Build static introduction

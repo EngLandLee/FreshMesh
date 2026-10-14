@@ -21,6 +21,7 @@
     transferSearch: "",
     lastRequest: 0,
   };
+  const routeMap = new window.FreshMeshMap.RouteMap(document.querySelector("#route-map"));
   const statusNames = {
     submitted: "Chờ duyệt",
     approved: "Đã duyệt",
@@ -316,12 +317,14 @@
 
   function setActiveView(view) {
     state.activeView = view;
+    if (view !== "routes") routeMap.pause();
     $$(".view").forEach((el) => {
       el.hidden = el.id !== `view-${view}`;
     });
     $$(".nav-link").forEach((el) =>
       el.classList.toggle("is-active", el.dataset.nav === view),
     );
+    $$(".nav-link").forEach((el) => el.setAttribute("aria-current", el.dataset.nav === view ? "page" : "false"));
     if (location.hash !== `#${view}`) history.replaceState({}, "", `#${view}`);
     if (view === "overview" && !state.overview) loadOverview();
     if (view === "recommendations" && !state.recommendations)
@@ -382,17 +385,20 @@
     $("#stock-table-body").innerHTML = (data.stock || [])
       .map(
         (item) =>
-          `<tr><td><span class="table-primary">${escapeHtml(item.name || item.sku)}</span><span class="table-secondary">${escapeHtml(item.sku)} · ${escapeHtml(item.lot_id)}</span></td><td>${escapeHtml(item.store_id)}</td><td class="numeric"><strong>${formatNumber(item.available)}</strong><span class="table-secondary">${formatNumber(item.quantity)} tổng · ${formatNumber(item.reserved)} giữ</span></td><td>${escapeHtml(formatShortDate(item.expires_on))}</td><td class="numeric">${formatCurrency(item.unit_cost_vnd)}</td></tr>`,
+          `<tr><td><span class="table-primary">${escapeHtml(item.name || item.sku)}</span><span class="table-secondary">${escapeHtml(item.sku)} · <span title="${escapeHtml(item.lot_id)}">${escapeHtml(item.lot_id?.startsWith("received-") ? `Nhận ${item.lot_id.slice(9, 17)}` : item.lot_id)}</span></span></td><td>${escapeHtml(item.store_id)}</td><td class="numeric"><strong>${formatNumber(item.available)}</strong><span class="table-secondary">${formatNumber(item.quantity)} tổng · ${formatNumber(item.reserved)} giữ</span></td><td>${escapeHtml(formatShortDate(item.expires_on))}</td><td class="numeric">${formatCurrency(item.unit_cost_vnd)}</td></tr>`,
       )
       .join("");
     $("#stock-empty").hidden = Boolean((data.stock || []).length);
     $("#store-list").innerHTML = (data.stores || [])
       .map(
         (store) =>
-          `<div class="store-item"><div><span class="store-name">${escapeHtml(store.name)}</span><span class="store-id">${escapeHtml(store.id)}</span></div><span class="store-coord">${Number(store.lat).toFixed(4)}, ${Number(store.lng).toFixed(4)}</span></div>`,
+          `<div class="store-item"><span class="store-pin" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 10V6l2-3h12l2 3v4M4 10v11h16V10M9 21v-7h6v7M3 10h18"/></svg></span><div><span class="store-name">${escapeHtml(store.name)}</span><span class="store-id">${escapeHtml(store.id)}</span></div><span class="store-coord">${Number(store.lat).toFixed(4)}, ${Number(store.lng).toFixed(4)}</span></div>`,
       )
       .join("");
     $("#store-empty").hidden = Boolean((data.stores || []).length);
+    window.FreshMeshMap.overview($("#overview-map"), data.stores || []);
+    $("#network-store-count").textContent = `${(data.stores || []).length} cửa hàng trong phạm vi`;
+    routeMap.update({stores: data.stores || []});
     $("#stock-updated").textContent =
       `Cập nhật ${formatDate(new Date().toISOString())}`;
   }
@@ -508,6 +514,8 @@
     $("#route-list").hidden = true;
     try {
       state.routes = await request("/routes");
+      if (!state.overview) await loadOverview();
+      if (!state.transfers.length) await loadTransfers();
       renderRoutes();
     } catch (error) {
       showGlobalError(error.message);
@@ -516,6 +524,7 @@
     }
   }
   function renderRoutes() {
+    routeMap.update({routes: state.routes, stores: state.overview?.stores || [], transfers: state.transfers});
     const list = $("#route-list");
     list.innerHTML = state.routes
       .map(
@@ -881,6 +890,7 @@
     const action = event.target.closest("[data-action]")?.dataset.action;
     if (!action) return;
     const target = event.target.closest("[data-action]");
+    if (action === "open-route-view") return setActiveView("routes");
     if (action === "refresh-overview") {
       state.overview = null;
       return loadOverview();

@@ -86,6 +86,8 @@ jobs:
           exit 1
       - name: Exercise HTTP business flow
         run: make demo-check
+      - name: Exercise read-only route map controls and boundaries
+        run: npm run test:map
       - name: Capture real browser evidence
         run: make screenshots
       - name: Build static introduction

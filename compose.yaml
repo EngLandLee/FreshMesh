@@ -147,7 +147,7 @@ services:
     ports:
       - "127.0.0.1:3180:80"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - http://localhost/ | grep -q '<' "]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/"]
       interval: 5s
       timeout: 5s
       retries: 20

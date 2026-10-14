@@ -47,7 +47,8 @@ try {
   await page.setViewportSize({width:1440,height:440});
   const banner=await page.goto(`${base}/assets/banner.svg`,{waitUntil:'networkidle'});
   assert.equal(banner.status(),200);
-  await screenshot('banner');
+  await page.locator('svg').screenshot({path:join(output,'banner.png')});
+  await writeFile(join(output,'banner.png.license'),license);
   assert.deepEqual(errors,[]);
   console.log(JSON.stringify({result:'passed',site:base,viewports:[1440,390],images:'loaded',navigation:'#start',banner:'rendered original SVG'}));
 } finally {await browser.close();}
