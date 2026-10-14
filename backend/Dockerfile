@@ -7,7 +7,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY freshmesh_core ./freshmesh_core
 RUN uv sync --frozen --no-dev
 
-FROM python:3.12-slim-bookworm
+FROM python:3.14-slim-bookworm
 WORKDIR /app
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
