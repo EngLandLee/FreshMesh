@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+name: Unit and static verification
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install backend dependencies
+        run: uv sync --project backend --frozen
+      - name: Run backend unit tests
+        run: uv run --project backend pytest backend/tests
+      - name: Lint backend
+        run: uv run --project backend ruff check --config backend/pyproject.toml backend
+      - name: Check portal JavaScript syntax
+        run: node --check portal/app.js
+      - name: Validate Compose model
+        run: docker compose config --quiet
+      - name: Audit source licenses and headers
+        run: python3 scripts/check-licenses.py --strict

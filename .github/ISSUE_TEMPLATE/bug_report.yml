@@ -1,0 +1,44 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+name: Bug report
+description: Report a reproducible defect in the OLP
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include secrets, personal data, or undisclosed vulnerabilities. Use SECURITY.md for security reports."
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Release tag or commit where this happened.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include role, endpoint or UI path, and safe sample values.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and logs
+      description: Redact tokens, credentials, and personal data.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [portal, api, workflow, identity, storage, documentation, build]
+    validations:
+      required: true

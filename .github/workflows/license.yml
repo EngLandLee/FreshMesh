@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+name: License and source boundary
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Apache headers and forbidden release inputs
+        run: python3 scripts/check-licenses.py --strict
+      - name: Check source archive script interface
+        run: shellcheck scripts/verify.sh scripts/release.sh

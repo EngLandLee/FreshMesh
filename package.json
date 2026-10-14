@@ -1,0 +1,8 @@
+{
+  "name": "freshmesh-dxos-verification",
+  "version": "0.2.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {"test:ui": "node scripts/ui-smoke.mjs"},
+  "devDependencies": {"@playwright/test": "1.55.1"}
+}

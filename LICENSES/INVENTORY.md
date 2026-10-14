@@ -21,6 +21,7 @@ are authoritative for a particular build.
 | Ollama / Qwen2.5-0.5B-Instruct | Optional local advisory AI | MIT / Apache-2.0, https://github.com/ollama/ollama and https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct | External runtime/model download; no weights in source release |
 | PostgreSQL JDBC driver | Workflow database connectivity | BSD-2-Clause, see upstream artifact metadata | Build dependency |
 | OR-Tools | Route distance/order estimate where enabled | Apache License 2.0, https://developers.google.com/optimization/ | Build dependency; route output labels assumptions |
+| Playwright Test 1.55.1 | Real-browser verification only | Apache-2.0, https://github.com/microsoft/playwright | npm-managed development dependency; browser binaries are downloaded, not bundled |
 | nginx | Static portal and reverse proxy | 2-clause BSD, https://nginx.org/LICENSE | External container/runtime |
 | Docker Compose | Local orchestration | Apache License 2.0, https://github.com/docker/compose/blob/main/LICENSE | Developer tool, not bundled |
 
@@ -39,4 +40,4 @@ Run `make release` after a clean checkout. It writes a source-only tarball,
 `SHA256SUMS`, and `sbom.cdx.json` under `dist/`. The release SBOM records the
 complete Python `uv.lock` set, direct workflow POM dependencies, and pinned Compose
 images. It intentionally does not claim Maven-transitive or complete image coverage;
-the CI syft workflow produces that broader build/image SBOM for a concrete build.
+the CI Syft workflow scans source manifests, not complete runtime images or a guarantee of all Maven transitives.
