@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0; Copyright 2026 FreshMesh-DXOS contributors -->
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:flowable="http://flowable.org/bpmn"
+             targetNamespace="https://freshmesh.example/workflow">
+  <process id="freshmesh-transfer" name="FreshMesh transfer lifecycle" isExecutable="true">
+    <startEvent id="start" name="Submitted"/>
+    <sequenceFlow id="start-to-approval" sourceRef="start" targetRef="approval"/>
+    <userTask id="approval" name="Owner approval" flowable:candidateGroups="owner"/>
+    <sequenceFlow id="approval-to-decision" sourceRef="approval" targetRef="decision"/>
+    <exclusiveGateway id="decision" name="Approved?"/>
+    <sequenceFlow id="approved" sourceRef="decision" targetRef="dispatch">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="rejected" sourceRef="decision" targetRef="rejection-end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved == false}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="rejection-end" name="Rejected"/>
+    <userTask id="dispatch" name="Dispatch" flowable:candidateGroups="owner"/>
+    <sequenceFlow id="dispatch-to-delivery" sourceRef="dispatch" targetRef="delivery"/>
+    <userTask id="delivery" name="Driver delivery" flowable:candidateGroups="driver"/>
+    <sequenceFlow id="delivery-to-receipt" sourceRef="delivery" targetRef="receipt"/>
+    <userTask id="receipt" name="Store receipt" flowable:candidateGroups="store_manager"/>
+    <sequenceFlow id="receipt-to-end" sourceRef="receipt" targetRef="complete-end"/>
+    <endEvent id="complete-end" name="Received"/>
+  </process>
+</definitions>

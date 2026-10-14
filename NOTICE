@@ -1,0 +1,14 @@
+FreshMesh-DXOS OLP
+Copyright 2026 FreshMesh-DXOS contributors
+
+This distribution contains independently authored FreshMesh-DXOS OLP source code,
+licensed under the Apache License, Version 2.0. See LICENSE.
+
+The repository's source is not copied from, bundled with, or a relicensing of any
+unlicensed parent or analytics project. Generated build output, local credentials,
+Docker volumes, downloaded model weights, and runtime data are excluded from source
+releases.
+
+Third-party products used to run the documented stack remain under their own licenses.
+Their names are listed in LICENSES/INVENTORY.md for attribution and review; this
+NOTICE does not change those licenses or grant rights in third-party products.

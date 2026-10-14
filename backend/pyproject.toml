@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+[project]
+name = "freshmesh-dxos"
+version = "0.2.0"
+description = "Headless DX-OS services and fresh-goods process portal API"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = [
+  "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "psycopg[binary]>=3.2,<4",
+  "PyJWT[crypto]>=2.9,<3", "boto3>=1.35,<2", "httpx>=0.27,<1",
+  "python-multipart>=0.0.20,<1", "ortools>=9.11,<10"
+]
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["freshmesh_core"]
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.11,<1"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+[tool.ruff]
+line-length = 110
