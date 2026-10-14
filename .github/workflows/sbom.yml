@@ -16,7 +16,7 @@ jobs:
       contents: write
       actions: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Generate source dependency SBOM
         uses: anchore/sbom-action@v0
         with:

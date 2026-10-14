@@ -11,7 +11,7 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Check Apache headers and forbidden release inputs
         run: python3 scripts/check-licenses.py --strict
       - name: Check source archive script interface
