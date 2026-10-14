@@ -49,3 +49,21 @@ is estimated, and optional AI behavior must fail visibly when unavailable.
 Use imperative, scoped subjects (for example, `Enforce receipt actor policy`). Keep
 unrelated formatting out of a change. A maintainer may request a dependency license
 entry, a changelog line, or a security note before merge.
+
+## Ownership and dependency maintenance
+
+[CODEOWNERS](.github/CODEOWNERS) requests review from the repository owner. It does
+not assert that branch protection is enabled or that a human review has occurred.
+Use the existing bug/feature forms; source instructions and license-notice
+corrections have their own [documentation form](.github/ISSUE_TEMPLATE/documentation.yml).
+Read [support guidance](.github/SUPPORT.md) before sharing logs. Exploitable issues
+belong in the private channel described in [SECURITY.md](SECURITY.md).
+
+[Dependabot](.github/dependabot.yml) schedules bounded update PRs for the package
+managers actually used here. There is no auto-merge. Review upstream license and
+behavior changes; update locks and `LICENSES/INVENTORY.md` when appropriate. Run
+`make verify` for every change and the real Docker/browser gates for runtime,
+container or workflow changes. Do not merge a major update merely because its
+manifest resolves. GitHub's [supported ecosystem reference](https://docs.github.com/en/code-security/reference/supply-chain-security/supported-ecosystems-and-repositories)
+defines the `uv` and `docker-compose` integrations.
+

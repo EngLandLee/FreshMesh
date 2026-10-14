@@ -11,6 +11,10 @@ permissions:
 jobs:
   sbom:
     runs-on: ubuntu-latest
+    # Only this trusted release/manual job needs to attach SBOM release assets.
+    permissions:
+      contents: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - name: Generate source dependency SBOM
@@ -20,8 +24,3 @@ jobs:
           format: cyclonedx-json
           output-file: sbom.cdx.json
           artifact-name: freshmesh-olp-sbom.cdx.json
-      - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: freshmesh-olp-sbom
-          path: sbom.cdx.json

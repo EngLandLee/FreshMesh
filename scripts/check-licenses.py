@@ -13,7 +13,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SOURCE_SUFFIXES = {'.py', '.js', '.mjs', '.css', '.html', '.java', '.sh', '.yml', '.yaml', '.toml',
                    '.sql', '.xml', '.properties', '.md', '.json', '.lock'}
-SOURCE_NAMES = {'Makefile', 'Dockerfile', 'compose.yaml', 'compose.yml', '.env.example', '.dockerignore'}
+SOURCE_NAMES = {'Makefile', 'Dockerfile', 'CODEOWNERS', 'compose.yaml', 'compose.yml', '.env.example', '.dockerignore'}
 SKIP_PARTS = {'.git', 'dist', '__pycache__', 'node_modules', 'target', '.venv', 'data', 'secrets',
               '.ruff_cache', '.pytest_cache'}
 FORBIDDEN_SUFFIXES = {'.pem', '.key', '.crt', '.p12', '.jks', '.sqlite3', '.db'}

@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+  - package-ecosystem: uv
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+  - package-ecosystem: maven
+    directory: /workflow
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+  - package-ecosystem: docker
+    directories:
+      - /backend
+      - /workflow
+      - /portal
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2

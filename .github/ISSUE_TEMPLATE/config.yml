@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 FreshMesh-DXOS contributors
+blank_issues_enabled: false
+contact_links:
+  - name: Help with source startup and the demo
+    url: https://github.com/EngLandLee/FreshMesh-DXOS/blob/main/.github/SUPPORT.md
+    about: Check prerequisites and troubleshooting before opening a reproducible bug report.
+  - name: Report a security vulnerability privately
+    url: https://github.com/EngLandLee/FreshMesh-DXOS/security/advisories/new
+    about: Do not publish tokens, credentials, personal data or exploitable vulnerabilities in issues.

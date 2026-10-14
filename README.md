@@ -4,6 +4,7 @@
 
 [![Verification](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/unit.yml/badge.svg)](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/unit.yml)
 [![License audit](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/license.yml/badge.svg)](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/license.yml)
+[![Docker E2E](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/docker-e2e.yml/badge.svg)](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/docker-e2e.yml)
 
 **FreshMesh-DXOS — điều chuyển hàng tươi có phê duyệt, lập tuyến và giao nhận thực tế.**
 Xem [báo cáo cá nhân bằng tiếng Việt](docs/BAO-CAO-DAU-TIEN.md) và
@@ -20,6 +21,12 @@ integration support it without turning the demo into an IoT system.
 - Release notes: [CHANGELOG.md](CHANGELOG.md)
 - Security reporting: [SECURITY.md](SECURITY.md)
 - Contribution rules: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Published source, checksums and SBOM: [latest release](https://github.com/EngLandLee/FreshMesh-DXOS/releases/latest)
+- Troubleshooting and report channels: [support](.github/SUPPORT.md)
+
+**Navigate:** [What is included](#what-is-included) · [Architecture](#architecture-vocabulary) ·
+[Source quickstart](#source-quickstart) · [Operational boundaries](#operational-boundaries) ·
+[Documentation](#documentation-map) · [Community](#community-and-maintenance) · [License](#license)
 
 ## What is included
 
@@ -29,6 +36,12 @@ SeaweedFS, Flowable, nginx, and other external products are obtained under their
 own licenses; see [LICENSES/INVENTORY.md](LICENSES/INVENTORY.md). Runtime data,
 credentials, generated artifacts, binaries, and model weights are excluded from
 source releases.
+
+![Actual FreshMesh portal showing completed and rejected transfers](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.2.1/portal-desktop.png)
+
+Actual local browser capture, 2026-10-14, using synthetic demo data after Keycloak
+PKCE login. It is not a mockup or evidence of a public production deployment.
+The image and its Apache-2.0 notice are release assets, not bundled runtime binaries.
 
 ## Architecture vocabulary
 
@@ -123,6 +136,25 @@ See [docs/OPTIONAL-AI.md](docs/OPTIONAL-AI.md).
 - [Delivery report](docs/DELIVERY.md) — PoF evidence and known limitations
 - [API contract](docs/API.md) — public request/response behavior and errors
 - [Development](CONTRIBUTING.md) — source headers, tests, and review expectations
+
+## Community and maintenance
+
+- [Report a reproducible bug](https://github.com/EngLandLee/FreshMesh-DXOS/issues/new?template=bug_report.yml)
+- [Correct documentation or dependency licensing](https://github.com/EngLandLee/FreshMesh-DXOS/issues/new?template=documentation.yml)
+- [Propose an operational improvement](https://github.com/EngLandLee/FreshMesh-DXOS/issues/new?template=feature_request.yml)
+- [Review ownership](.github/CODEOWNERS) — repository owner, not an invented team roster
+- [Dependency updates](.github/dependabot.yml) — scheduled review PRs for Actions,
+  npm, uv, Maven, Dockerfiles and Compose; no automatic merge
+- [Code of conduct](CODE_OF_CONDUCT.md) and [private security reporting](SECURITY.md)
+
+Every dependency change still requires license review and the applicable source
+and runtime gates. A configured update schedule is not a claim that all images
+are vulnerability-free or that an update PR has already run.
+
+Repository-maintenance patterns were reviewed against
+[HutechCJ/ProfioApp](https://github.com/HutechCJ/ProfioApp). Only missing support,
+review ownership, dependency automation, issue routing and genuine screenshot
+presentation were adapted; no code, logos or contributor claims were copied.
 
 ## License
 

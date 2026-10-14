@@ -37,3 +37,18 @@ GitHub CI results are available at
 https://github.com/EngLandLee/FreshMesh-DXOS/actions . The source release is generated
 only after the repository is committed and its tracked worktree is clean; release
 checksum and archive-content verification are separate from these runtime gates.
+
+## Public source-release verification
+
+The v0.2.0 source archive and checksum were downloaded from the published GitHub
+release into a separate `/tmp/freshmesh-release-validation` directory. From that
+directory, `sha256sum -c dist/SHA256SUMS` returned `OK`. After extraction, running
+`make verify` from the archived source passed all 13 regression tests, backend lint,
+JavaScript syntax, Compose validation and the 67-file source-license audit.
+This is verification of a downloaded release, not only the working checkout.
+
+The README portal image was captured from the running application after actual
+Keycloak PKCE authentication as the demo chain owner. It shows synthetic completed
+and rejected transfers from the already exercised HTTP/browser flows. No browser
+tokens, cookies, credentials or production data are included in the image.
+
