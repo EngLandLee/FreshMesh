@@ -52,3 +52,29 @@ Keycloak PKCE authentication as the demo chain owner. It shows synthetic complet
 and rejected transfers from the already exercised HTTP/browser flows. No browser
 tokens, cookies, credentials or production data are included in the image.
 
+## v0.3.0 showcase verification
+
+- Real Playwright gallery: transfer `1a684359-d747-42e1-ac25-cdd1467c4fdd`,
+  route `40f911a8-f410-4a59-aa6b-bcc23ba1d1db`; four roles, 4 dispatched / 3 delivered /
+  3 received, document download SHA-256, no runtime errors, 390px no overflow.
+  Thirteen captures and their provenance ledger were generated without HTTP mocks.
+- `make site-check` passed for desktop 1440 and mobile 390: all referenced images
+  loaded, startup anchor navigation worked, document width stayed within viewport,
+  and the original SVG banner was rendered to PNG. A real mobile grid-overflow
+  defect was reproduced before the `min-width: 0` correction.
+- `npm run test:map` passed: play/pause/reset, zoom/fit, saved authorized route,
+  hidden-view pause, missing-origin/hostile-label boundaries, zero business writes,
+  no runtime errors and 390px width. Existing user map/design work was preserved.
+- The development image built with Dev Containers CLI 0.83.0; `up` completed and
+  `exec` observed Python 3.12.15, Node 22.14.0, uv 0.11.1, JDK 21, Maven, Docker CLI/
+  Compose and the actual host four-core health endpoint. A stale upstream Yarn key
+  blocked the first base image; the source now uses a clean Python/Debian base,
+  without disabling package signatures.
+- Optional AI was exercised through actual SSO and gateway, returning HTTP 200
+  from Ollama `qwen2.5:0.5b`. Gateway/portal deadlines now encompass the backend's
+  120-second inference limit. This establishes connectivity, not numerical quality:
+  observed generated wording can be wrong and is explicitly advisory.
+- GitHub main protection was enabled with strict `unit`, `audit`, `e2e` checks,
+  administrator enforcement, conversation resolution, no force pushes or deletion.
+  This does not claim a human approval review. Pages accepts main and `v*` tags.
+

@@ -1,48 +1,57 @@
-# 15-minute operational demo
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 FreshMesh-DXOS contributors -->
+# Demo vận hành 15 phút
 
-Copyright 2026 FreshMesh-DXOS contributors — SPDX-License-Identifier: Apache-2.0.
+Đây là luồng thật qua portal, không seed/fake HTTP response. Chuẩn bị từ source:
 
-This run exercises the real stack. It does not seed fake HTTP responses. Prepare with
-`cp .env.example .env && make up`; wait until `make verify` reports healthy services.
-The deterministic automation is `make demo-check`, while these steps explain what an
-operator should observe.
+```sh
+cp .env.example .env
+make up
+until curl --fail --silent http://localhost:3180/api/health; do sleep 3; done
+```
 
-## 0–2 minutes — trust boundary
+Không dùng `make verify` làm dấu hiệu live health: lệnh đó không thay thế `curl` health
+trực tiếp. Nếu cần log, chạy `make logs` ở terminal khác.
 
-Open `http://localhost:3180`, sign in through Keycloak as `manager_a1` with the local
-demo password from `.env.example`/realm setup, and show the chain/store identity. Explain
-that the portal uses Authorization Code + PKCE and that direct access grants are a
-CLI-only demo convenience, never a browser flow.
+## 0–2 phút — đăng nhập và trust boundary
 
-## 2–5 minutes — stock and request
+Mở `http://localhost:3180`, đăng nhập `manager_a1`/`demo123` qua Keycloak và chỉ ra
+CHAIN_A/A-01. Portal dùng Authorization Code + PKCE S256; direct grant chỉ là tiện ích
+CLI. Không chia sẻ mật khẩu demo ra ngoài môi trường cô lập.
 
-On Overview, record source available stock and destination stock. As the manager,
-create a transfer from A-01 to A-02. Show the submitted status and the reserved amount;
-opening a second request beyond available stock must be denied. Upload a small text
-document and download it again, checking the displayed SHA-256.
+## 2–5 phút — tồn và tạo yêu cầu
 
-## 5–8 minutes — policy and workflow
+Ở Overview, ghi lại tồn source/destination. Với `manager_a1`, tạo một transfer
+A-01 → A-02, số lượng **4**. Tạo thêm yêu cầu vượt tồn để quan sát từ chối. Tải lên một
+file text nhỏ, tải xuống lại và đối chiếu SHA-256 trong chi tiết transfer.
 
-Attempt approval as the requesting manager and show the authorization failure. Sign in
-as `owner_a`, approve, and dispatch to an assigned driver. Show the Flowable process ID,
-actor events, and the route's estimated-distance/assumption disclosure.
+## 5–8 phút — chính sách và tuyến
 
-## 8–11 minutes — delivery and receipt
+Đăng nhập lại `manager_a1`, thử duyệt để thấy authorization failure. Đăng nhập
+`owner_a`, duyệt rồi lập tuyến cho `driver_a` và điều phối. Hiển thị process ID Flowable,
+actor events và khoảng cách/thứ tự **ước tính OR-Tools** (một nguồn, một xe, giả định
+được công bố; không phải định vị thời gian thực).
 
-As the assigned driver, record a delivery (including an optional shortfall). As the
-destination manager, receive the actual quantity. Show the immutable event trail and
-that a repeated transition returns conflict/idempotent behavior instead of duplicating
-stock.
+## 8–11 phút — giao và nhận
 
-## 11–13 minutes — isolation and failure paths
+Đăng nhập `driver_a`, mở Delivery và ghi `actual_quantity=3` để thể hiện thiếu một đơn
+vị. Đăng nhập `manager_a2`, nhận đúng 3. Mở timeline để xem submitted/approved/
+dispatched/delivered/received và actor. Thử gửi lại transition: phải conflict/idempotent,
+không nhân đôi tồn.
 
-Use an invalid/expired token and an `owner_b` token against chain A. Both must be denied
-without leaking transfer data. Show that unauthorized document download is denied and
-that anonymous access remains limited to config/health.
+## 11–13 phút — cô lập và nhánh bị từ chối
 
-## 13–15 minutes — durability and limits
+Dùng token sai/hết hạn hoặc role không hợp lệ; gọi dữ liệu bằng `owner_b` (CHAIN_B) đối
+với transfer CHAIN_A. Các request phải bị từ chối, không tiết lộ transfer/document.
+Anonymous chỉ được xem config/health; tải tài liệu của tenant khác cũng bị chặn.
 
-Record before/after source and destination stock, restart the stack without removing
-volumes, and reload the transfer. The state and audit trail remain. Explain that route
-distance is haversine estimation, recommendations disclose assumptions/provenance, and
-AI is optional; disabling Ollama does not break the core flow.
+## 13–15 phút — bền vững và dọn dẹp
+
+Ghi tồn trước/sau: source giảm theo xuất, destination tăng theo **3 thực nhận**.
+Chạy `make down` rồi khởi động lại bằng `make up` (không xóa volume), chờ lại curl
+health và mở transfer; state, tài liệu, timeline vẫn còn. Không chạy `docker compose down -v`
+hoặc xóa named volume để reset. Tắt core bằng `make down` khi hoàn tất.
+
+AI là tùy chọn; xem [OPTIONAL-AI](OPTIONAL-AI.md) nếu cần. Ảnh reproducible và mười
+ba tên release xem [SCREENSHOTS](SCREENSHOTS.md); không gọi Public Pages là business
+demo hosted.

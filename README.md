@@ -1,162 +1,199 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <!-- Copyright 2026 FreshMesh-DXOS contributors -->
-# FreshMesh-DXOS OLP
+![FreshMesh-DXOS — Hàng tươi đúng nơi, giao nhận rõ trách nhiệm](website/assets/banner.svg)
+
+# FreshMesh-DXOS
 
 [![Verification](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/unit.yml/badge.svg)](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/unit.yml)
 [![License audit](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/license.yml/badge.svg)](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/license.yml)
 [![Docker E2E](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/docker-e2e.yml/badge.svg)](https://github.com/EngLandLee/FreshMesh-DXOS/actions/workflows/docker-e2e.yml)
 
-**FreshMesh-DXOS — điều chuyển hàng tươi có phê duyệt, lập tuyến và giao nhận thực tế.**
-Xem [báo cáo cá nhân bằng tiếng Việt](docs/BAO-CAO-DAU-TIEN.md) và
-[đối chiếu 50 điểm PoF](docs/POF-CHECKLIST.md).
+**Nền tảng lõi mở cho điều chuyển hàng tươi, phê duyệt, lập tuyến và giao nhận có trách nhiệm.**
 
-FreshMesh-DXOS OLP is an original, Apache-2.0 licensed operations control plane for
-multi-store inventory transfers. It provides auditable transfer approval, dispatch,
-delivery, receipt, document evidence, stock effects, and route planning for a
-multi-tenant chain. The primary HPDI axis is **P (process/workflow)**; data and
-integration support it without turning the demo into an IoT system.
+[Trang giới thiệu](https://englandlee.github.io/FreshMesh-DXOS/) · [Bản phát hành](https://github.com/EngLandLee/FreshMesh-DXOS/releases/latest) · [Hướng dẫn chạy](docs/GETTING-STARTED.md) · [Demo từng vai trò](docs/DEMO.md) · [Toàn bộ ảnh thực](docs/SCREENSHOTS.md)
 
-- Public repository: <https://github.com/EngLandLee/FreshMesh-DXOS>
-- License: [Apache-2.0](LICENSE)
-- Release notes: [CHANGELOG.md](CHANGELOG.md)
-- Security reporting: [SECURITY.md](SECURITY.md)
-- Contribution rules: [CONTRIBUTING.md](CONTRIBUTING.md)
-- Published source, checksums and SBOM: [latest release](https://github.com/EngLandLee/FreshMesh-DXOS/releases/latest)
-- Troubleshooting and report channels: [support](.github/SUPPORT.md)
+## Mục lục
 
-**Navigate:** [What is included](#what-is-included) · [Architecture](#architecture-vocabulary) ·
-[Source quickstart](#source-quickstart) · [Operational boundaries](#operational-boundaries) ·
-[Documentation](#documentation-map) · [Community](#community-and-maintenance) · [License](#license)
+- [Bài toán và góc nhìn](#bài-toán-và-góc-nhìn)
+- [Chức năng](#chức-năng)
+- [Kiến trúc DX-OS](#kiến-trúc-dx-os)
+- [Giao diện và luồng thực](#giao-diện-và-luồng-thực)
+- [Chạy từ mã nguồn](#chạy-từ-mã-nguồn)
+- [Cấu trúc repository](#cấu-trúc-repository)
+- [Workflow Git và phát hành](#workflow-git-và-phát-hành)
+- [Mã tự viết, sản phẩm tích hợp và giấy phép](#mã-tự-viết-sản-phẩm-tích-hợp-và-giấy-phép)
+- [Tài liệu và cộng đồng](#tài-liệu-và-cộng-đồng)
+- [Giới hạn công khai](#giới-hạn-công-khai)
 
-## What is included
+## Bài toán và góc nhìn
 
-The source is independently authored FreshMesh-DXOS code. It does not distribute
-source from an unlicensed parent analytics project. PostgreSQL, Keycloak, APISIX,
-SeaweedFS, Flowable, nginx, and other external products are obtained under their
-own licenses; see [LICENSES/INVENTORY.md](LICENSES/INVENTORY.md). Runtime data,
-credentials, generated artifacts, binaries, and model weights are excluded from
-source releases.
+Chuỗi mini-mart nhỏ thường có cửa hàng dư hàng tươi trong khi cửa hàng khác thiếu.
+Một quyết định chuyển hàng kéo theo nhiều việc: chọn lô còn hạn, giữ tồn, xin duyệt,
+gán tài xế, lập tuyến, xác nhận thực giao/thực nhận và lưu chứng từ. Dữ liệu rời rạc
+khiến việc giao thiếu và trách nhiệm giữa các bên khó truy vết.
 
-![Actual FreshMesh portal showing completed and rejected transfers](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.2.1/portal-desktop.png)
+FreshMesh đặt **quy trình có trách nhiệm** làm trung tâm. Tồn kho không thay đổi theo
+một nút bấm tùy ý: mỗi hành động phải đúng vai trò, đúng trạng thái Flowable và đúng
+chuỗi/cửa hàng. AI chỉ hỗ trợ đọc hiểu; không thay người phê duyệt hoặc tự xuất hàng.
 
-Actual local browser capture, 2026-10-14, using synthetic demo data after Keycloak
-PKCE login. It is not a mockup or evidence of a public production deployment.
-The image and its Apache-2.0 notice are release assets, not bundled runtime binaries.
+Dự án phục vụ mô hình DX-OS Open-Core của OLP 2026, chọn **HPDI P — Process** làm
+không gian chính. Không dùng IoT, GPS phần cứng hoặc dịch vụ AI đóng bắt buộc.
 
-## Architecture vocabulary
+## Chức năng
 
-The OLP follows the competition's exact three-tier reference architecture. These
-tiers are not a list of containers:
+| Năng lực | Hành vi thực hiện |
+|---|---|
+| Tồn kho và đề xuất | Lô, hạn dùng, tồn khả dụng; dự báo trung bình bảy ngày; giải thích giả định và provenance |
+| Phiếu điều chuyển | Tạo và giữ chỗ; chủ chuỗi duyệt/từ chối; không tự duyệt; từ chối trả lại lượng giữ |
+| Lộ trình | Gom phiếu được duyệt, chọn tài xế, OR-Tools sắp điểm dừng, công khai khoảng cách ước tính |
+| Xuất và giao | Tồn nguồn giảm khi dispatch; tài xế được giao nhiệm vụ ghi số thực giao và lý do thiếu |
+| Nhận hàng | Cửa hàng đích xác nhận số thực nhận; tồn đích tăng đúng lượng; thao tác lặp bị kiểm soát |
+| Chứng từ và lịch sử | S3 qua API có xác thực, SHA-256, actor timeline, process/task ID |
+| Phân quyền | Keycloak PKCE; kiểm tra JWT, tenant, store, role tại server; không dựa vào ẩn nút UI |
+| AI tùy chọn | Ollama/Qwen trả lời thật từ dữ liệu được phép; thiếu inference báo lỗi, không dùng câu trả lời dựng sẵn |
 
-| Tier | Contract | FreshMesh-DXOS mapping |
-| --- | --- | --- |
-| **T1 — headless** | Reusable Identity/SSO, API Gateway, structured and unstructured data, and Workflow services with no replacement UI | Keycloak, APISIX, PostgreSQL + SeaweedFS, and Flowable behind API contracts |
-| **T2 — HPDI application** | At least one user-facing application in H, P, D, or I that consumes T1 | The P portal: approval tasks, evidence, status and accountable actions |
-| **T3 — business domain** | Domain logic above the platform, not an additional mandatory app | FreshMesh transfer and route operations: stock, dispatch, delivery and receipt |
+## Kiến trúc DX-OS
 
-The primary HPDI space is **P (process/workflow)**. The portal uses the platform
-for FreshMesh's specific workflow; this release does not claim an arbitrary
-plugin marketplace or a generic no-code form builder.
+| Tầng | Vai trò | Thành phần |
+|---|---|---|
+| T1 — Headless Open-Core | Bốn dịch vụ bắt buộc dùng qua API | Keycloak; APISIX; PostgreSQL + SeaweedFS S3; Flowable |
+| T2 — HPDI P | Portal quy trình cho người thao tác | HTML/CSS/JavaScript, SSO, task, evidence, trạng thái lõi |
+| T3 — Nghiệp vụ | Điều chuyển và giao hàng | FastAPI, quy tắc tồn kho, khuyến nghị, OR-Tools |
 
-The official seven functional reference areas are:
+[Kiến trúc chi tiết](docs/ARCHITECTURE.md) mô tả ranh giới tin cậy, dữ liệu và giới hạn
+transaction giữa database và workflow. Ba tầng logic không đồng nghĩa ba container.
+Bảy vùng chức năng tham chiếu không phải bảy service bắt buộc và không được tuyên bố
+là đã triển khai hết. Landing page là trang giới thiệu, không thay UI quản trị nghiệp vụ.
 
-1. Experience and multi-channel interface
-2. Network edge, gateway, and information security
-3. Operations, logic, and entity state
-4. Automation, process, and DevSecOps
-5. Hyperconverged data, streaming, and ledger
-6. Analytics, spatial services, and intelligence
-7. Governance, search, and system observability
+## Giao diện và luồng thực
 
-These seven areas are a reference architecture, not seven required services or a
-claim that OLP implements every area. The four **mandatory T1 services** are
-Identity/SSO, API Gateway, structured and unstructured data, and Workflow. The
-optional AI integration is not one of the four.
+Ảnh được chụp bằng **Playwright/Chromium trên các dịch vụ thật**, dùng dữ liệu demo
+giả lập. Không phải mockup; không phải bằng chứng về dữ liệu hay hiệu quả doanh nghiệp.
 
-The detailed sequence and trust boundaries are in
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+### Tổng quan và đề xuất
 
-## Source quickstart
+![Tổng quan tồn kho](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.3.0/02-overview.png)
 
-Prerequisites: Docker Engine with Compose v2, `make`, `uv`, Python 3.12+, Node.js
-22+, and a POSIX shell. Copy `.env.example` to `.env` and review every development
-credential before starting:
+![Đề xuất với provenance](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.3.0/03-recommendations.png)
 
+### Phê duyệt và lập tuyến
+
+![Phê duyệt theo vai trò](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.3.0/06-approval.png)
+
+![Lộ trình OR-Tools](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.3.0/08-route-planned.png)
+
+### Giao, nhận và chứng từ
+
+![Tài xế nhận nhiệm vụ giao](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.3.0/09-driver-delivery.png)
+
+![Thực nhận và chứng từ](https://github.com/EngLandLee/FreshMesh-DXOS/releases/download/v0.3.0/11-receipt-evidence.png)
+
+[Gallery đầy đủ](docs/SCREENSHOTS.md) gồm SSO, tạo phiếu, trạng thái submitted,
+route form, xác nhận nhận, bốn lõi và mobile. Ảnh và notice Apache-2.0 được phát hành
+riêng; không nhét browser binary, database hoặc trọng số AI vào source archive.
+
+## Chạy từ mã nguồn
+
+Cần Docker Engine + Compose v2, make. Để chạy verification: Python 3.12+, uv,
+Node.js 22+ và POSIX shell. Windows dùng WSL2 với Docker Engine/Compose đã kết nối.
 
 ```sh
+git clone https://github.com/EngLandLee/FreshMesh-DXOS.git
+cd FreshMesh-DXOS
 cp .env.example .env
 make up
-# Portal: http://localhost:3180
+curl --fail http://localhost:3180/api/health
 make verify
 make demo-check
+npm ci --ignore-scripts
+npx playwright install chromium
+make ui-check
 ```
 
-Browser acceptance additionally needs `npm ci --ignore-scripts` and
-`npx playwright install chromium`; then run `make ui-check`. CI installs these
-from `package-lock.json`. Browser binaries are not bundled in source releases.
+- **Portal:** http://localhost:3180
+- **Landing nội bộ:** http://localhost:3180/about/
+- **Landing công khai:** https://englandlee.github.io/FreshMesh-DXOS/
+- **Password demo:** `demo123`, chỉ dùng trong môi trường phát triển cô lập.
+- **Vai trò:** `manager_a1` tạo; `owner_a` duyệt/lập tuyến; `driver_a` giao;
+  `manager_a2` nhận. `owner_b` dùng để kiểm tra cô lập chuỗi.
 
-`make up` runs `docker compose up --build -d`. The portal proxies `/api` to the
-APISIX gateway and `/auth` to Keycloak. The browser uses the configured public
-client and PKCE; it never uses a password grant. Demo accounts and their explicit
-local-only direct-access-grant caveat are documented in [docs/DEMO.md](docs/DEMO.md).
-
-Useful lifecycle commands:
+`make up` build mã FastAPI, Java workflow adapter và portal từ source. Engine tích
+hợp sử dụng image upstream có giấy phép mở, pin phiên bản; không tuyên bố đã tự
+build toàn bộ hệ điều hành bên trong các image.
 
 ```sh
-make down             # stop containers (keeps volumes)
-make logs             # follow the stack
-make verify           # tests, syntax, license/header audit, compose config
-make demo-check       # real HTTP integration exercise; requires a running stack
-make ui-check         # real Chromium UI: PKCE, four actors, delivery and documents
-make release          # source-only archive, SHA256SUMS, and SBOM metadata in dist/
+make logs             # log dịch vụ, không chia sẻ secret
+make down             # dừng; giữ nguyên volumes
+make screenshots      # Playwright thật + gallery và license trong dist/screenshots
+make site             # build website độc lập vào dist/site
+make ai-up            # overlay Ollama + model tùy chọn
+make release          # source archive, SHA256SUMS, manifest SBOM
 ```
 
-An optional `compose.ai.yaml` overlay runs actual Ollama with the Apache-2.0
-Qwen2.5-0.5B-Instruct model: `make ai-up`. Weights stay outside the source release.
-Missing or failed inference returns a visible error, not a prepared answer.
-See [docs/OPTIONAL-AI.md](docs/OPTIONAL-AI.md).
+[Hướng dẫn đầy đủ](docs/GETTING-STARTED.md): kiểm tra prerequisites, health, tài khoản,
+trình duyệt Linux, môi trường container phát triển, khôi phục lỗi và giới hạn dữ liệu demo.
+`make demo-check`/`make ui-check` tạo dữ liệu thật và tiêu thụ tồn; không tự xóa database.
 
-## Operational boundaries
+## Cấu trúc repository
 
-- Anonymous access is limited to `/api/config` and `/api/health`.
-- JWT verification checks the Keycloak issuer, RS256 signature, audience, expiration,
-  chain, and store claims. Cross-chain and cross-store attempts are denied.
-- A transfer reserves source stock at creation, releases it on rejection, deducts it
-  on dispatch, and increments destination stock on receipt. Receipt shortfall and
-  the actor trail are persisted.
-- Route distance is a deterministic haversine estimate, not live-road navigation.
-  Recommendations state their method, assumptions, and provenance.
-- Documents are streamed through authenticated API endpoints and identified by
-  SHA-256; local credentials and runtime data are never release inputs.
+```text
+backend/              FastAPI, policy, stock, recommendations, routing
+workflow/             Java headless Flowable adapter và BPMN
+portal/               UI vận hành với PKCE
+website/              Landing page, CSS và banner SVG gốc
+deploy/               Cấu hình Keycloak, APISIX, storage
+scripts/              Verification, HTTP/browser flow, website, release và SBOM
+LICENSES/             Giấy phép và provenance dependency
+.github/              CI, PR/release/Pages, issue forms, review ownership, Dependabot
+.devcontainer/        Môi trường Linux phát triển tái tạo được
+docs/                 Hướng dẫn chạy, demo, API, kiến trúc và workflow Git
+```
 
-## Documentation map
+## Workflow Git và phát hành
 
-- [Architecture](docs/ARCHITECTURE.md) — trust boundaries, state changes, and limits
-- [15-minute demo](docs/DEMO.md) — actor-by-actor acceptance path
-- [Delivery report](docs/DELIVERY.md) — PoF evidence and known limitations
-- [API contract](docs/API.md) — public request/response behavior and errors
-- [Development](CONTRIBUTING.md) — source headers, tests, and review expectations
+Từ issue, tạo branch `feat/...`, `fix/...` hoặc `docs/...`; mở PR vào `main`.
+Unit/static, license/source, build stack và HTTP/Playwright E2E chạy trên PR.
+Ảnh cùng metadata được lưu thành workflow artifact để người review nhìn được luồng.
+Không auto-merge dependency PR và không giả lập người review.
 
-## Community and maintenance
+Tag SemVer `vX.Y.Z` kích hoạt workflow release: chạy verification và stack thật,
+chụp gallery, đóng gói source, checksum và SBOM; chỉ publish release sau các gate đạt.
+Website Pages deploy từ đúng source và ảnh đã kiểm chứng. Chi tiết branch policy,
+quyền của jobs, rollback, tạo tag và release ở [GIT-WORKFLOW.md](docs/GIT-WORKFLOW.md).
 
-- [Report a reproducible bug](https://github.com/EngLandLee/FreshMesh-DXOS/issues/new?template=bug_report.yml)
-- [Correct documentation or dependency licensing](https://github.com/EngLandLee/FreshMesh-DXOS/issues/new?template=documentation.yml)
-- [Propose an operational improvement](https://github.com/EngLandLee/FreshMesh-DXOS/issues/new?template=feature_request.yml)
-- [Review ownership](.github/CODEOWNERS) — repository owner, not an invented team roster
-- [Dependency updates](.github/dependabot.yml) — scheduled review PRs for Actions,
-  npm, uv, Maven, Dockerfiles and Compose; no automatic merge
-- [Code of conduct](CODE_OF_CONDUCT.md) and [private security reporting](SECURITY.md)
+## Mã tự viết, sản phẩm tích hợp và giấy phép
 
-Every dependency change still requires license review and the applicable source
-and runtime gates. A configured update schedule is not a claim that all images
-are vulnerability-free or that an update PR has already run.
+Mã FreshMesh tự viết gồm portal, landing, policy nghiệp vụ, adapter, BPMN, cấu hình,
+script và tài liệu, được phát hành **Apache-2.0**. Không phân phối mã parent/PACO chưa
+rõ quyền cấp phép. PostgreSQL, Keycloak, APISIX, SeaweedFS, Flowable, nginx, OR-Tools
+và dependency giữ giấy phép của chúng; xem [inventory](LICENSES/INVENTORY.md).
+Wrapper/API tích hợp không biến engine upstream thành mã của đội.
 
-Repository-maintenance patterns were reviewed against
-[HutechCJ/ProfioApp](https://github.com/HutechCJ/ProfioApp). Only missing support,
-review ownership, dependency automation, issue routing and genuine screenshot
-presentation were adapted; no code, logos or contributor claims were copied.
+Source release chỉ có source/config/docs/license; không chứa `.env` thực, credentials,
+runtime volumes, thư viện vendor, browser binary hoặc trọng số model. SPDX/notice,
+lockfiles và audit source là các gate thực thi, không chỉ nội dung README.
 
-## License
+## Tài liệu và cộng đồng
 
-Copyright 2026 FreshMesh-DXOS contributors. Licensed under the Apache License,
-Version 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+- [Bắt đầu và xử lý lỗi](docs/GETTING-STARTED.md)
+- [Luồng demo 15 phút](docs/DEMO.md) · [Ảnh thực từng bước](docs/SCREENSHOTS.md)
+- [Kiến trúc](docs/ARCHITECTURE.md) · [API](docs/API.md)
+- [Git/PR/CI/release](docs/GIT-WORKFLOW.md) · [Changelog](CHANGELOG.md)
+- [Bằng chứng verification](docs/VERIFICATION.md) · [AI tùy chọn](docs/OPTIONAL-AI.md)
+- [Đóng góp](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md)
+- [Hỗ trợ](.github/SUPPORT.md) · [Issue tracker](https://github.com/EngLandLee/FreshMesh-DXOS/issues)
+- [Báo bảo mật riêng tư](SECURITY.md) · [Review ownership](.github/CODEOWNERS)
+
+Người đóng góp được ghi nhận qua [lịch sử commit](https://github.com/EngLandLee/FreshMesh-DXOS/graphs/contributors),
+không dựng hồ sơ đội, người tài trợ, khách hàng hoặc lời chứng thực. Banner là thiết
+kế gốc; screenshot có provenance và giấy phép riêng.
+
+## Giới hạn công khai
+
+Dữ liệu giả lập; route dùng haversine, không phải bản đồ đường bộ/ETA; dự báo trung
+bình bảy ngày, không phải federated learning. Nhập hàng/giảm giá là khuyến nghị,
+chưa thực thi với nhà cung cấp/POS. AI tùy chọn chưa benchmark độ chính xác.
+
+Trang Pages là giới thiệu và hướng dẫn công khai; stack nghiệp vụ mặc định chỉ bind
+loopback, dùng cấu hình phát triển. Không mô tả đó là triển khai production an toàn
+hoặc hứa điểm thi. Copyright 2026 FreshMesh-DXOS contributors — [Apache-2.0](LICENSE).

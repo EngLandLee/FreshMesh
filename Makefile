@@ -3,7 +3,7 @@
 SHELL := /bin/sh
 COMPOSE ?= docker compose
 
-.PHONY: up down logs verify demo-check release compose-config
+.PHONY: up ai-up down logs verify demo-check release compose-config ui-check screenshots site site-check site-preview
 
 up:
 	$(COMPOSE) up --build -d
@@ -33,3 +33,15 @@ release:
 
 ui-check:
 	npm run test:ui
+
+screenshots:
+	SCREENSHOT_DIR=dist/screenshots node scripts/ui-smoke.mjs
+
+site:
+	python3 scripts/build-site.py
+
+site-check:
+	node scripts/site-smoke.mjs
+
+site-preview:
+	python3 -m http.server 3181 --bind 127.0.0.1 --directory dist/site

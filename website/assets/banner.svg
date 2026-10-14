@@ -1,0 +1,23 @@
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<!-- Copyright 2026 FreshMesh-DXOS contributors -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 440" role="img" aria-labelledby="banner-title banner-desc">
+<title id="banner-title">FreshMesh-DXOS — fresh stock, accountable handovers</title>
+<desc id="banner-desc">Original FreshMesh wordmark and connected source, transit and destination nodes representing accountable stock transfers.</desc>
+<rect width="1440" height="440" fill="#102b25"/>
+<g fill="#f6f8f3" font-family="Segoe UI, sans-serif">
+<text x="72" y="150" font-size="76" font-weight="700" letter-spacing="-2">FreshMesh<tspan fill="#b6d9bb">—DXOS</tspan></text>
+<text x="76" y="218" font-size="30">Hàng tươi đúng nơi. Giao nhận rõ trách nhiệm.</text>
+<text x="76" y="290" font-size="20" fill="#b6d9bb">Đề xuất · Phê duyệt · Lập tuyến · Giao hàng · Xác nhận</text>
+<text x="76" y="378" font-size="17" fill="#b6d9bb">OPEN SOURCE / APACHE-2.0</text>
+</g>
+<g stroke="#b6d9bb" stroke-width="3" fill="none">
+<path d="M1080 112 V208 H1256 V320"/>
+<path d="M1080 208 H1016 V320"/>
+<circle cx="1080" cy="112" r="24" fill="#1d5141"/>
+<circle cx="1016" cy="320" r="24" fill="#1d5141"/>
+<circle cx="1256" cy="320" r="24" fill="#1d5141"/>
+</g>
+<g fill="#f6f8f3" font-family="Segoe UI, sans-serif" font-size="16" text-anchor="middle">
+<text x="1080" y="65">NGUỒN</text><text x="1016" y="380">GIAO</text><text x="1256" y="380">NHẬN</text>
+</g>
+</svg>

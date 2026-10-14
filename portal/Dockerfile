@@ -3,6 +3,7 @@
 FROM nginx:1.27.2-alpine
 
 COPY portal/ /usr/share/nginx/html/
+COPY website/ /usr/share/nginx/html/about/
 RUN rm -f /etc/nginx/conf.d/default.conf \
  && cat > /etc/nginx/conf.d/freshmesh.conf <<'NGINX'
 server {
@@ -22,6 +23,7 @@ server {
     }
 
     location /api/ {
+        proxy_read_timeout 140s;
         proxy_pass http://gateway:9080/api/;
         proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-Host $http_host;
