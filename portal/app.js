@@ -881,8 +881,12 @@
         body: JSON.stringify({ message }),
       });
       response.innerHTML = `<p>${escapeHtml(result.answer || "")}</p>${result.sources?.length ? `<p class="small-note">Nguồn: ${escapeHtml(result.sources.join(", "))} · Mô hình: ${escapeHtml(result.model || "—")}</p>` : ""}`;
+      if (result.warning) response.insertAdjacentHTML("beforeend",
+        `<p class="notice notice-neutral">${escapeHtml(result.warning)}</p>`);
+      $("#agent-status").textContent = `Đã kết nối · ${result.model || "mô hình local"}`;
     } catch (error) {
       response.innerHTML = `<p class="notice notice-error">Trợ lý hiện không khả dụng: ${escapeHtml(error.message)}</p>`;
+      $("#agent-status").textContent = "Không khả dụng ở lần kiểm tra này";
     }
   }
 
