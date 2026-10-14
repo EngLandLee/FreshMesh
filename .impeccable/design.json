@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T12:55:51.277034+00:00",
+  "title": "Design System: FreshMesh-DXOS",
+  "extensions": {
+    "shadows": [{"name":"dialog-depth","value":"0 13px 30px rgba(16,43,37,.09)","purpose":"Focused dialog depth"}],
+    "motion": [{"name":"control-transition","value":"0.18s","purpose":"Button state transitions; disabled by reduced-motion preference"}],
+    "breakpoints": [{"name":"mobile","value":"720px"}]
+  },
+  "components": [
+    {
+      "name":"Primary action", "kind":"button", "refersTo":"button-primary",
+      "description":"Consequential action inside a role-authorized workflow.",
+      "html":"<button class=\"ds-primary\">Phê duyệt</button>",
+      "css":".ds-primary{background:var(--forest-800,#1d5141);color:#fff;padding:8px 14px;border:1px solid transparent;border-radius:7px;font-weight:650;min-height:38px}.ds-primary:hover{background:var(--forest-950,#102b25)}.ds-primary:focus-visible{outline:2px solid #438266;outline-offset:3px}"
+    },
+    {
+      "name":"Secondary action", "kind":"button",
+      "description":"Refresh, inspect or cancel without changing the business state.",
+      "html":"<button class=\"ds-secondary\">Làm mới</button>",
+      "css":".ds-secondary{background:#fff;color:#173b31;border:1px solid #d6e0d8;padding:8px 14px;border-radius:7px;font-weight:650;min-height:38px}.ds-secondary:hover{background:#e6f1e8;border-color:#b7d3bf}.ds-secondary:focus-visible{outline:2px solid #438266;outline-offset:3px}"
+    },
+    {
+      "name":"Labelled input", "kind":"input",
+      "description":"Visible labels and explicit typed values for accountable actions.",
+      "html":"<label class=\"ds-field\">Ghi chú<input aria-label=\"Ghi chú\" placeholder=\"Lý do xử lý\"></label>",
+      "css":".ds-field{display:grid;gap:5px;font-size:12px;font-weight:700;color:#5d7068}.ds-field input{font:inherit;font-size:14px;padding:8px 10px;border:1px solid #c6d4c9;border-radius:7px;background:#fff;color:#17342d}.ds-field input:focus-visible{outline:2px solid #438266;outline-offset:3px}"
+    },
+    {
+      "name":"Active navigation", "kind":"nav",
+      "description":"One active operational view; narrow screens use a scrollable navigation strip.",
+      "html":"<a class=\"ds-nav\" href=\"#transfers\" aria-current=\"page\">Phiếu chuyển</a>",
+      "css":".ds-nav{display:flex;align-items:center;min-height:41px;padding:9px 13px;border-radius:7px;background:#1d5141;color:#fff;font-weight:600;text-decoration:none}.ds-nav:hover{background:#173b31}.ds-nav:focus-visible{outline:2px solid #438266;outline-offset:3px}"
+    },
+    {
+      "name":"Status label", "kind":"chip",
+      "description":"Text remains explicit; color never carries state alone.",
+      "html":"<span class=\"ds-status\">Đã nhận</span>",
+      "css":".ds-status{display:inline-flex;align-items:center;justify-content:center;min-width:80px;padding:4px 8px;border-radius:99px;font-size:12px;font-weight:750;background:#e6f1e8;color:#1d5141;white-space:nowrap}"
+    }
+  ],
+  "narrative": {
+    "northStar":"Bàn điều phối có trách nhiệm",
+    "overview":"People scan stock, approve proposals and record actual handovers; status and accountability lead, decoration does not. Vietnamese copy explains errors, assumptions and next actions.",
+    "keyCharacteristics":["Operational density","Explicit status and actor","Evidence-first Vietnamese copy"],
+    "rules":[],
+    "dos":["Do keep task status, actor, actual quantity and evidence visible.","Do honor [hidden] and reduced-motion preferences.","Do expose data provenance and estimated-route limitations."],
+    "donts":["Don't cover active controls with toast overlays.","Don't fabricate business metrics, customers or AI confidence.","Don't replace the operational interface with marketing decoration."]
+  }
+}

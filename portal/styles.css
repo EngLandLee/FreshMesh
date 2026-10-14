@@ -261,7 +261,7 @@ a {
   color: #aad4ad;
 }
 .brand-product {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   color: #bcd4c1;
 }
@@ -278,7 +278,7 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   color: #c6e1cc;
 }
 .status-dot {
@@ -309,7 +309,7 @@ a {
 .sidebar-heading {
   margin: 0 13px 11px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.11em;
 }
@@ -340,7 +340,7 @@ a {
   min-width: 18px;
   text-align: right;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .nav-link.is-active .nav-count {
   color: #c9e2cd;
@@ -376,7 +376,7 @@ a {
 .eyebrow {
   margin: 0 0 7px;
   color: var(--forest-600);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.13em;
   font-weight: 800;
 }
@@ -453,7 +453,7 @@ a {
 .muted-label,
 .small-note {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .table-scroll {
   overflow: auto;
@@ -471,7 +471,7 @@ a {
 }
 .table-scroll th {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -488,7 +488,7 @@ a {
 .table-secondary {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .numeric {
   font-variant-numeric: tabular-nums;
@@ -513,12 +513,12 @@ a {
 .store-id {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .store-coord {
   font-variant-numeric: tabular-nums;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   text-align: right;
 }
 .provenance-banner {
@@ -553,7 +553,7 @@ a {
   box-shadow: 0 4px 13px rgba(16, 43, 37, 0.035);
 }
 .recommendation-kind {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.09em;
   font-weight: 800;
   color: var(--forest-600);
@@ -573,7 +573,7 @@ a {
   flex-wrap: wrap;
   gap: 8px 18px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .recommendation-meta strong {
   color: var(--ink);
@@ -601,7 +601,7 @@ a {
   gap: 5px;
   min-width: 170px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 .filter-row input,
@@ -641,7 +641,7 @@ a {
   border-color: #a5c5ac;
 }
 .transfer-id {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
@@ -662,7 +662,7 @@ a {
 }
 .transfer-date {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .status-badge {
   display: inline-flex;
@@ -671,7 +671,7 @@ a {
   min-width: 80px;
   padding: 4px 8px;
   border-radius: 99px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 750;
   background: var(--mint-100);
   color: var(--forest-800);
@@ -748,7 +748,7 @@ a {
 }
 .route-stop-number {
   color: var(--forest-600);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 .route-stop-name {
@@ -759,7 +759,7 @@ a {
 .route-stop-coord {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .delivery-list {
   display: grid;
@@ -819,7 +819,7 @@ a {
   align-items: center;
   gap: 7px;
   margin-top: 7px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
 }
 .service-ok .status-dot {
@@ -1000,7 +1000,7 @@ a {
 .detail-field span {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .detail-field strong {
   display: block;
@@ -1049,7 +1049,7 @@ a {
 .timeline-meta {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .timeline-note {
   margin: 4px 0 0;
@@ -1072,7 +1072,7 @@ a {
   gap: 10px;
   padding: 9px 11px;
   background: #f5f8f3;
-  font-size: 11px;
+  font-size: 12px;
 }
 .attachment button {
   padding: 0;
@@ -1307,7 +1307,7 @@ html {
   border-top: 1px solid #9ac5a3;
 }
 .eyebrow {
-  font-size: 11px;
+  font-size: 12px;
 }
 .muted-label,
 .small-note {

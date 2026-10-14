@@ -13,6 +13,7 @@ or that judges will award a particular score.
 | Manual UI exercise | Same role-separated path, transfer `f8b6b4ba-583c-47f6-8264-4a1e0050ada5`; actual receipt upload and persisted timeline inspected |
 | Visual verification | Desktop 1440 and mobile 390; four mandatory cores ready, hidden login panel absent after SSO and no horizontal page overflow |
 | Optional AI | Gateway returned HTTP 200 from actual Ollama `qwen2.5:0.5b`; source provenance and model warning returned, no fabricated fallback. This does not establish answer quality or numerical correctness. |
+| Clean-volume source startup | A separate `freshmesh-clean` project initialized new PostgreSQL/Keycloak/S3 volumes with no manual account repair; HTTP and patched-browser gates passed. HTTP transfer `23c1563b-3a96-423c-a3a7-87421aa14b47`; browser transfer `6dd5d577-6461-42de-91e7-313f4fe3c1a9`. |
 
 ## Repeatability
 

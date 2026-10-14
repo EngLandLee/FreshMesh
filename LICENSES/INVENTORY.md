@@ -10,10 +10,10 @@ are authoritative for a particular build.
 | Product | Use in OLP | License / attribution source | Distribution boundary |
 | --- | --- | --- | --- |
 | PostgreSQL 16 | Relational persistence | PostgreSQL License, https://www.postgresql.org/about/licence/ | External container/runtime; not copied into this repository |
-| Keycloak 26.0.7 | OIDC identity and JWT issuer | Apache License 2.0, https://www.keycloak.org/license | External container/runtime |
-| Apache APISIX 3.11 | API gateway and rate limiting | Apache License 2.0, https://apisix.apache.org/license/ | External container/runtime |
+| Keycloak 26.0.7 | OIDC identity and JWT issuer | Apache License 2.0, https://github.com/keycloak/keycloak/blob/main/LICENSE.txt | External container/runtime |
+| Apache APISIX 3.11 | API gateway and rate limiting | Apache License 2.0, https://github.com/apache/apisix/blob/master/LICENSE | External container/runtime |
 | SeaweedFS 3.80 | S3-compatible object storage | Apache License 2.0, https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE | External container/runtime |
-| Flowable OSS 7.0.1 | BPMN workflow engine | Apache License 2.0, https://github.com/flowable/flowable-engine/blob/main/LICENSE.md | Workflow wrapper uses public APIs; engine is a build dependency |
+| Flowable OSS 7.0.1 | BPMN workflow engine | Apache License 2.0, https://github.com/flowable/flowable-engine/blob/main/LICENSE | Workflow wrapper uses public APIs; engine is a build dependency |
 | Python / FastAPI / Uvicorn | API service runtime | Python Software Foundation License / MIT, see upstream notices | Build/runtime dependencies, lock metadata and SBOM identify exact transitive versions |
 | Psycopg 3 | Python PostgreSQL client | LGPL-3.0-or-later, https://github.com/psycopg/psycopg | Package-managed dependency; not relicensed as Apache-2.0 |
 | PyJWT / cryptography / boto3 / httpx / Pydantic | JWT validation, S3 and API contracts | MIT / Apache-2.0 OR BSD-3-Clause / Apache-2.0 / BSD-3-Clause / MIT; inspect installed distribution metadata | Versioned in `backend/uv.lock`; external libraries, not copied source |
