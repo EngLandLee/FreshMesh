@@ -45,7 +45,7 @@ jobs:
         with:
           name: ${{ inputs.verified_site_artifact }}
           path: dist/site
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: ${{ inputs.verified_site_artifact == '' }}
         with:
           node-version: 22
