@@ -4,6 +4,18 @@
 
 All notable changes to FreshMesh-DXOS OLP are recorded here. Dates use ISO 8601.
 
+## [0.3.1] — 2026-10-14
+
+### Fixed
+
+- Enforced license metadata for every distributed tracked file, including arbitrary
+  extensions and extensionless names; source archives use full-tree coverage.
+- Added legal-text sidecars for LICENSE and NOTICE without modifying their text.
+- Validated metadata sidecars and JSON/TOML lock syntax; kept ignored local environment
+  credentials outside source coverage while rejecting credentials in source archives.
+- Verified that an unknown-extension file fails without a header and passes with
+  valid SPDX/copyright metadata. Public Pages was confirmed working after deployment.
+
 ## [0.3.0] — 2026-10-14
 
 ### Added
@@ -59,6 +71,7 @@ All notable changes to FreshMesh-DXOS OLP are recorded here. Dates use ISO 8601.
 
 - Added contributor, security, conduct, architecture, demo, and delivery guidance.
 
+[0.3.1]: https://github.com/EngLandLee/FreshMesh-DXOS/releases/tag/v0.3.1
 [0.3.0]: https://github.com/EngLandLee/FreshMesh-DXOS/releases/tag/v0.3.0
 [0.2.1]: https://github.com/EngLandLee/FreshMesh-DXOS/releases/tag/v0.2.1
 [0.2.0]: https://github.com/EngLandLee/FreshMesh-DXOS/releases/tag/v0.2.0
