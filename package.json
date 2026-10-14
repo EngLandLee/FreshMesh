@@ -7,5 +7,5 @@
     "test:ui": "node scripts/ui-smoke.mjs",
     "test:map": "node scripts/map-smoke.mjs"
   },
-  "devDependencies": {"@playwright/test": "1.55.1"}
+  "devDependencies": {"@playwright/test": "1.64.0"}
 }
