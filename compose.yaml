@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
 
   gateway:
-    image: apache/apisix:3.11.0-debian
+    image: apache/apisix:3.19.0-debian
     volumes:
       - ./deploy/gateway/config.yaml:/usr/local/apisix/conf/config.yaml:ro
       - ./deploy/gateway/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
